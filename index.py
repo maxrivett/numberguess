@@ -1,8 +1,8 @@
 import random
-
+import time
 
 barrier = '\n--------------------------------------------------------------'
-welcome_message='\nHello there, and welcome to the random number guessing game!\nThe rules are as follows:\n- There will be three minigames\n- You can choose to guess or create a number for the computer to guess, decide the maximum, and allot the number of guesses'
+welcome_message='\nHello there, and welcome to the random number guessing game!\nThe rules are as follows:\n- You choose the number of mini-games you would like to play\n- You can choose to guess or create a number for the computer to guess, decide the maximum, and allot the number of guesses'
 points_message = '\nThe number of points you receive will depends on how high you cap the maximum, and how many guesses you give.\nIf you\'re guessing, you will receive X / Y points, where X is the maximum number and Y is the number of guesses you were allowed.'
 computer_message = ' If the computer is guessing, you will receive X / (X / Y) points if they cannot guess it, and none if they do.'
 print(barrier)
@@ -17,6 +17,7 @@ error_message = 'Error occurred. Please play again.'
 
 def game():
     gr = game_num_ask() # games remaining
+    gtotal = gr # so that end number isn't affected
     pts = 0
     for x in range(gr):
         correct_text = False
@@ -38,14 +39,46 @@ def game():
         if game_num == 1:
             pts += user_guess()
         elif game_num == 2:
-            cpu_guess()
+            pts += cpu_guess()
         gr -= 1
 
-    print('\nYou finished with '+str(pts) +' points in '+str(gr)+' games!')
+    print('\nYou finished with '+str(pts) +' points in '+str(gtotal)+' games!')
 
 def cpu_guess():
-    return
+    print('\nWhat would you like the number to be? ')
+    num = int(input())
+    maximum = 0
+    minimum = 0
+    correct = False
+    while maximum < num:
+        print('\nWhat would you like the maximum to be? (Must be greater than the previous number.) ')
+        maximum = int(input())
+    print('\nHow many guesses will you allow the computer? ')
+    guess_amount = int(input())
+    for x in range(guess_amount):
+        print('\nThe computer has '+str(guess_amount)+' guesses remaining.')
+        guess_val = guess_algorithm(maximum,minimum)
+        print('\nThe computer guesses '+str(guess_val)+'!')
+        time.sleep(1)
+        if num > guess_val:
+            print('\nThe number is higher than their guess.')
+            maximum = maximum
+            minimum = guess_val
+        elif num < guess_val:
+            print('\nThe number is lower than their guess.')
+            maximum = guess_val
+            minimum = minimum
+        else:
+            print('\nCorrect! You lost to the computer.')
+            correct = True
+            break
+        guess_amount -= 1
+        time.sleep(2)
 
+    if correct == True:
+        return 0
+    else:
+        return 50
 
 def user_guess():
     print('\nWhat would you like to guess out of, and how many guesses would you like?')
@@ -90,5 +123,10 @@ def game_num_ask():
     print('\nHow many games would you like to play?')
     game_input = int(input())
     return game_input
+
+def guess_algorithm(max,min):
+    range = max - min
+    guess_val = (range//2) + min
+    return guess_val
 
 game()
